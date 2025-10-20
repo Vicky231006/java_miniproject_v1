@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="8" xmlns:fx="http://javafx.com/fxml" fx:controller="ui.ResultsController" style="-fx-padding:10;">
+  <children>
+    <TableView fx:id="resultsTable" prefHeight="400">
+      <columns>
+        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+        <TableColumn fx:id="colQuizId" text="Quiz ID" prefWidth="80"/>
+        <TableColumn fx:id="colScore" text="Score (%)" prefWidth="90"/>
+        <TableColumn fx:id="colTotal" text="Total Qs" prefWidth="90"/>
+        <TableColumn fx:id="colAnswers" text="Answers" prefWidth="350"/>
+      </columns>
+    </TableView>
+  </children>
+</VBox>

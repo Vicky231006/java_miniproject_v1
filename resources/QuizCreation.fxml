@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="8" xmlns:fx="http://javafx.com/fxml" fx:controller="ui.QuizCreationController" style="-fx-padding: 10;">
+  <children>
+    <HBox spacing="8">
+      <children>
+        <Label text="Title:" />
+        <TextField fx:id="titleField" HBox.hgrow="ALWAYS"/>
+      </children>
+    </HBox>
+    <HBox spacing="8">
+      <children>
+        <Label text="Description:" />
+        <TextArea fx:id="descriptionArea" prefRowCount="2" HBox.hgrow="ALWAYS"/>
+      </children>
+    </HBox>
+    <Separator />
+    <Label text="Add Question" style="-fx-font-weight: bold;"/>
+    <TextField fx:id="qText" promptText="Question text"/>
+    <HBox spacing="6">
+      <children>
+        <TextField fx:id="optA" promptText="Option A" />
+        <TextField fx:id="optB" promptText="Option B" />
+        <TextField fx:id="optC" promptText="Option C" />
+        <TextField fx:id="optD" promptText="Option D" />
+      </children>
+    </HBox>
+    <HBox spacing="6">
+      <children>
+        <Label text="Correct:"/>
+        <ChoiceBox fx:id="correctChoice"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="addQuestionBtn" text="Add Question" onAction="#handleAddQuestion"/>
+      </children>
+    </HBox>
+    <Label text="Questions:" style="-fx-font-weight: bold;"/>
+    <ListView fx:id="questionsListView" prefHeight="150"/>
+    <HBox spacing="8" alignment="CENTER_RIGHT">
+      <children>
+        <Button fx:id="saveQuizBtn" text="Save Quiz" onAction="#handleSaveQuiz"/>
+      </children>
+    </HBox>
+  </children>
+</VBox>

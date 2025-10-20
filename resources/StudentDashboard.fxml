@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ui.StudentDashboardController">
+  <top>
+    <HBox spacing="10" style="-fx-padding:10;">
+      <children>
+        <Label fx:id="studentLabel" text="Student"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Search..." onKeyReleased="#handleSearch"/>
+        <Button text="Take Quiz" fx:id="takeQuizButton" onAction="#handleTakeQuiz"/>
+        <Button text="View Results" fx:id="viewResultsButton" onAction="#handleViewResults"/>
+      </children>
+    </HBox>
+  </top>
+  <center>
+    <TableView fx:id="quizzesTable">
+      <columns>
+        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+        <TableColumn fx:id="colTitle" text="Title" prefWidth="250"/>
+        <TableColumn fx:id="colDesc" text="Description" prefWidth="350"/>
+      </columns>
+    </TableView>
+  </center>
+</BorderPane>
