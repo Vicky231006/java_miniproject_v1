@@ -8,6 +8,7 @@ public class User {
     private String password;
     private String fullName;
     private String role; // TEACHER or STUDENT
+    private String studentClass; // e.g., A, B, C, D for students
     private LocalDateTime createdAt;
 
     public User() {}
@@ -35,6 +36,9 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public String getStudentClass() { return studentClass; }
+    public void setStudentClass(String studentClass) { this.studentClass = studentClass; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

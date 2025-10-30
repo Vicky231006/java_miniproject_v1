@@ -7,15 +7,20 @@
       <children>
         <Label fx:id="teacherLabel" text="Teacher" />
         <Region HBox.hgrow="ALWAYS"/>
-        <TextField fx:id="searchField" promptText="Search..." onKeyReleased="#handleSearch" />
+  <TextField fx:id="searchField" promptText="Search..." onKeyReleased="#handleSearch" styleClass="search-field" style="-fx-background-color:#11111b; -fx-control-inner-background:#11111b; -fx-text-fill:#c6c7d0; -fx-background-radius:6; -fx-padding:4 8;" />
         <Button text="Create Quiz" fx:id="createQuizButton" onAction="#handleCreateQuiz"/>
         <Button text="Edit Quiz" fx:id="editQuizButton" onAction="#handleEditQuiz"/>
         <Button text="Delete Quiz" fx:id="deleteQuizButton" onAction="#handleDeleteQuiz"/>
+  <Button text="View Results" fx:id="viewResultsButton" />
+  <Button text="Sign Out" fx:id="signOutButton" />
       </children>
     </HBox>
   </top>
   <center>
-    <TableView fx:id="quizzesTable">
+    <TableView fx:id="quizzesTable" styleClass="results-table">
+      <columnResizePolicy>
+        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+      </columnResizePolicy>
       <columns>
         <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
         <TableColumn fx:id="colTitle" text="Title" prefWidth="200"/>

@@ -12,7 +12,12 @@
         <TextField fx:id="usernameField" promptText="Username" />
         <PasswordField fx:id="passwordField" promptText="Password"/>
         <ChoiceBox fx:id="roleChoice" />
-        <Button fx:id="loginButton" text="Login" onAction="#handleLogin" maxWidth="200"/>
+        <HBox spacing="8">
+          <children>
+            <Button fx:id="loginButton" text="Login" onAction="#handleLogin" />
+            <Button fx:id="registerButton" text="Register" />
+          </children>
+        </HBox>
       </children>
       <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>

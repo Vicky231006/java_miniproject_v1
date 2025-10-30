@@ -26,6 +26,7 @@ public class StudentDashboardController {
     @FXML private Button takeQuizButton;
     @FXML private Button viewResultsButton;
     @FXML private Label studentLabel;
+    @FXML private Button signOutButton;
 
     private User student;
     private QuizDAO quizDAO = new QuizDAO();
@@ -42,6 +43,10 @@ public class StudentDashboardController {
         colId.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getId()));
         colTitle.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getTitle()));
         colDesc.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDescription()));
+        // wire sign out button programmatically (FXML no longer references onAction)
+        if (signOutButton != null) {
+            signOutButton.setOnAction(e -> handleSignOut());
+        }
     }
 
     private void loadQuizzes() {
@@ -69,7 +74,10 @@ public class StudentDashboardController {
             ctrl.setStudentAndQuiz(student, sel);
             Stage stage = new Stage();
             stage.setTitle("Take Quiz - " + sel.getTitle());
-            stage.setScene(new Scene(root));
+            Scene s = new Scene(root);
+            File css = new File("resources/catppuccin-mocha.css");
+            if (css.exists()) s.getStylesheets().add(css.toURI().toURL().toExternalForm());
+            stage.setScene(s);
             stage.showAndWait();
         } catch (Exception ex) {
             showAlert(Alert.AlertType.ERROR, "Error opening quiz", ex.getMessage());
@@ -86,7 +94,10 @@ public class StudentDashboardController {
             ctrl.setStudent(student);
             Stage stage = new Stage();
             stage.setTitle("Your Results");
-            stage.setScene(new Scene(root));
+            Scene s = new Scene(root);
+            File css = new File("resources/catppuccin-mocha.css");
+            if (css.exists()) s.getStylesheets().add(css.toURI().toURL().toExternalForm());
+            stage.setScene(s);
             stage.showAndWait();
         } catch (Exception ex) {
             showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
@@ -115,5 +126,24 @@ public class StudentDashboardController {
         a.setHeaderText(null);
         a.setContentText(msg);
         a.showAndWait();
+    }
+
+    @FXML
+    private void handleSignOut() {
+        try {
+            // replace current scene on same stage with login scene (safe)
+            Stage st = ui.UIUtils.getStage(studentLabel);
+            if (st == null) return;
+            File fxml = new File("resources/Login.fxml");
+            FXMLLoader loader = new FXMLLoader(fxml.toURI().toURL());
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            File css = new File("resources/catppuccin-mocha.css");
+            if (css.exists()) scene.getStylesheets().add(css.toURI().toURL().toExternalForm());
+            st.setTitle("Online Quiz Management System - Login");
+            st.setScene(scene);
+        } catch (Exception ex) {
+            showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+        }
     }
 }

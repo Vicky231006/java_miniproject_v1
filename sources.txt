@@ -13,6 +13,8 @@ C:\Users\Vicky\Desktop\new_quiz_system\src\models\User.java
 C:\Users\Vicky\Desktop\new_quiz_system\src\ui\LoginController.java
 C:\Users\Vicky\Desktop\new_quiz_system\src\ui\QuizAttemptController.java
 C:\Users\Vicky\Desktop\new_quiz_system\src\ui\QuizCreationController.java
+C:\Users\Vicky\Desktop\new_quiz_system\src\ui\RegisterController.java
 C:\Users\Vicky\Desktop\new_quiz_system\src\ui\ResultsController.java
 C:\Users\Vicky\Desktop\new_quiz_system\src\ui\StudentDashboardController.java
 C:\Users\Vicky\Desktop\new_quiz_system\src\ui\TeacherDashboardController.java
+C:\Users\Vicky\Desktop\new_quiz_system\src\ui\UIUtils.java

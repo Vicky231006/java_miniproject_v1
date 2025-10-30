@@ -3,13 +3,15 @@
 <?import javafx.scene.layout.*?>
 <VBox spacing="8" xmlns:fx="http://javafx.com/fxml" fx:controller="ui.ResultsController" style="-fx-padding:10;">
   <children>
-    <TableView fx:id="resultsTable" prefHeight="400">
+    <TableView fx:id="resultsTable" prefHeight="400" styleClass="results-table">
       <columns>
         <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
         <TableColumn fx:id="colQuizId" text="Quiz ID" prefWidth="80"/>
         <TableColumn fx:id="colScore" text="Score (%)" prefWidth="90"/>
         <TableColumn fx:id="colTotal" text="Total Qs" prefWidth="90"/>
-        <TableColumn fx:id="colAnswers" text="Answers" prefWidth="350"/>
+        <TableColumn fx:id="colAnswers" text="Answers" prefWidth="250"/>
+        <TableColumn fx:id="colStudent" text="Student" prefWidth="150"/>
+        <TableColumn fx:id="colStudentClass" text="Class" prefWidth="80"/>
       </columns>
     </TableView>
   </children>

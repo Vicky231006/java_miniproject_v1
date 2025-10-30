@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="ui.RegisterController" spacing="8" style="-fx-padding:12; -fx-alignment:center;">
+  <children>
+    <Label text="Register New Account" style="-fx-font-size:16; -fx-font-weight:bold;"/>
+    <TextField fx:id="username" promptText="Username" />
+    <PasswordField fx:id="password" promptText="Password" />
+    <TextField fx:id="fullName" promptText="Full name" />
+      <Label text="Role:" />
+      <ChoiceBox fx:id="roleChoice" />
+      <Label text="Class (A/B/C/D):" />
+      <ChoiceBox fx:id="classChoice" />
+    <HBox spacing="8">
+      <children>
+        <Button text="Register" onAction="#handleRegister" />
+          <Button text="Cancel" onAction="#handleCancel" />
+      </children>
+    </HBox>
+  </children>
+</VBox>

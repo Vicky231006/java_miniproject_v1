@@ -35,7 +35,7 @@
       </children>
     </HBox>
     <Label text="Questions:" style="-fx-font-weight: bold;"/>
-    <ListView fx:id="questionsListView" prefHeight="150"/>
+  <ListView fx:id="questionsListView" prefHeight="150" styleClass="card"/>
     <HBox spacing="8" alignment="CENTER_RIGHT">
       <children>
         <Button fx:id="saveQuizBtn" text="Save Quiz" onAction="#handleSaveQuiz"/>

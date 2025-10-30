@@ -6,15 +6,19 @@
     <HBox spacing="10" style="-fx-padding:10;">
       <children>
         <Label fx:id="studentLabel" text="Student"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <TextField fx:id="searchField" promptText="Search..." onKeyReleased="#handleSearch"/>
-        <Button text="Take Quiz" fx:id="takeQuizButton" onAction="#handleTakeQuiz"/>
-        <Button text="View Results" fx:id="viewResultsButton" onAction="#handleViewResults"/>
+  <Region HBox.hgrow="ALWAYS"/>
+  <TextField fx:id="searchField" promptText="Search..." onKeyReleased="#handleSearch" styleClass="search-field"/>
+  <Button text="Take Quiz" fx:id="takeQuizButton" onAction="#handleTakeQuiz"/>
+  <Button text="View Results" fx:id="viewResultsButton" onAction="#handleViewResults"/>
+  <Button text="Sign Out" fx:id="signOutButton" />
       </children>
     </HBox>
   </top>
   <center>
-    <TableView fx:id="quizzesTable">
+    <TableView fx:id="quizzesTable" styleClass="results-table">
+      <columnResizePolicy>
+        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+      </columnResizePolicy>
       <columns>
         <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
         <TableColumn fx:id="colTitle" text="Title" prefWidth="250"/>

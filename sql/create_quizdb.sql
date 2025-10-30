@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   full_name VARCHAR(200) NOT NULL,
   role ENUM('TEACHER','STUDENT') NOT NULL,
+  student_class VARCHAR(10) DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -51,5 +52,5 @@ CREATE TABLE IF NOT EXISTS results (
 
 -- Seed sample users (demo only - plain text passwords)
 INSERT INTO users (username, password, full_name, role) VALUES
-('teacher1', 'pass123', 'Alice Teacher', 'TEACHER'),
-('student1', 'pass123', 'Bob Student', 'STUDENT');
+('teacher1', 'pass123', 'Alice Teacher', 'TEACHER', NULL),
+('student1', 'pass123', 'Bob Student', 'STUDENT', 'A');

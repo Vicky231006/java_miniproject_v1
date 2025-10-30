@@ -1,6 +1,7 @@
 package ui;
 
 import dao.ResultDAO;
+import dao.UserDAO;
 import models.Result;
 import models.User;
 
@@ -19,14 +20,27 @@ public class ResultsController {
     @FXML private TableColumn<Result, Double> colScore;
     @FXML private TableColumn<Result, Integer> colTotal;
     @FXML private TableColumn<Result, String> colAnswers;
+    @FXML private TableColumn<Result, String> colStudent;
+    @FXML private TableColumn<Result, String> colStudentClass;
 
     private User student;
     private ResultDAO resultDAO = new ResultDAO();
+    private UserDAO userDAO = new UserDAO();
     private ObservableList<Result> results = FXCollections.observableArrayList();
 
     public void setStudent(User s) {
         this.student = s;
         loadResults();
+    }
+
+    // allow programmatic loading of results for a specific quiz (teacher view)
+    public void loadResultsByQuiz(int quizId) {
+        try {
+            List<Result> list = resultDAO.listResultsByQuiz(quizId);
+            results.setAll(list);
+        } catch (Exception ex) {
+            showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+        }
     }
 
     @FXML
@@ -36,6 +50,22 @@ public class ResultsController {
         colScore.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getScore()));
         colTotal.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getTotalQuestions()));
         colAnswers.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getAnswers()));
+        colStudent.setCellValueFactory(data -> {
+            try {
+                User u = userDAO.getById(data.getValue().getStudentId());
+                return new javafx.beans.property.SimpleStringProperty(u != null ? u.getFullName() : "(unknown)");
+            } catch (Exception ex) {
+                return new javafx.beans.property.SimpleStringProperty("(error)");
+            }
+        });
+        colStudentClass.setCellValueFactory(data -> {
+            try {
+                User u = userDAO.getById(data.getValue().getStudentId());
+                return new javafx.beans.property.SimpleStringProperty(u != null ? (u.getStudentClass()!=null ? u.getStudentClass() : "") : "");
+            } catch (Exception ex) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+        });
         resultsTable.setItems(results);
     }
 

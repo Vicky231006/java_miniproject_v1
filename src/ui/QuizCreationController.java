@@ -43,10 +43,49 @@ public class QuizCreationController {
                     setText(null);
                 } else {
                     setText(item.getQuestionText() + " (Correct: " + item.getCorrectOption() + ")");
+                    // style the cell for dark background
+                    setStyle("-fx-background-color: #0f0e16; -fx-text-fill: #c6c7d0;");
                 }
             }
         });
         questionsListView.setItems(questions);
+        // allow deleting selected question via context menu or DEL key
+        ContextMenu cm = new ContextMenu();
+        MenuItem delete = new MenuItem("Delete");
+        delete.setOnAction(e -> {
+            Question sel = questionsListView.getSelectionModel().getSelectedItem();
+            if (sel != null) {
+                // if it already exists in DB (has id > 0) delete it there too
+                if (sel.getId() > 0) {
+                    try {
+                        questionDAO.deleteQuestion(sel.getId());
+                    } catch (Exception ex) {
+                        showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+                    }
+                }
+                questions.remove(sel);
+            }
+        });
+        cm.getItems().add(delete);
+        questionsListView.setContextMenu(cm);
+        questionsListView.setOnKeyPressed(ev -> {
+            switch (ev.getCode()) {
+                case DELETE -> {
+                    Question sel = questionsListView.getSelectionModel().getSelectedItem();
+                    if (sel != null) {
+                        if (sel.getId() > 0) {
+                            try {
+                                questionDAO.deleteQuestion(sel.getId());
+                            } catch (Exception ex) {
+                                showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+                            }
+                        }
+                        questions.remove(sel);
+                    }
+                }
+                default -> {}
+            }
+        });
     }
 
     public void setTeacher(User t) { this.teacher = t; }
@@ -114,8 +153,8 @@ public class QuizCreationController {
             }
 
             showAlert(Alert.AlertType.INFORMATION, "Saved", "Quiz saved successfully.");
-            Stage stage = (Stage) saveQuizBtn.getScene().getWindow();
-            stage.close();
+            Stage stage = UIUtils.getStage(saveQuizBtn);
+            if (stage != null) stage.close();
         } catch (Exception ex) {
             showAlert(Alert.AlertType.ERROR, "Error saving", ex.getMessage());
         }

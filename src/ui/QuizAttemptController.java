@@ -53,7 +53,8 @@ public class QuizAttemptController {
                 rd.setToggleGroup(tg);
                 tgMap.put(qt.getId(), tg);
                 box.getChildren().addAll(qLabel, ra, rb, rc, rd);
-                box.setStyle("-fx-padding: 8; -fx-border-color: #ccc; -fx-border-radius: 4;");
+                // use .card style class for consistent theming
+                box.getStyleClass().add("card");
                 questionsContainer.getChildren().add(box);
             }
         } catch (Exception ex) {
@@ -96,8 +97,8 @@ public class QuizAttemptController {
             resultDAO.addResult(r);
 
             showAlert(Alert.AlertType.INFORMATION, "Submitted", "Score: " + String.format("%.2f", score) + "% (" + correct + "/" + total + ")");
-            Stage stage = (Stage) submitBtn.getScene().getWindow();
-            stage.close();
+            Stage stage = UIUtils.getStage(submitBtn);
+            if (stage != null) stage.close();
         } catch (Exception ex) {
             showAlert(Alert.AlertType.ERROR, "Error submitting", ex.getMessage());
         }

@@ -26,6 +26,7 @@ public class LoginController {
     public void initialize() {
         roleChoice.getItems().addAll("STUDENT", "TEACHER");
         roleChoice.setValue("STUDENT");
+        registerButton.setOnAction(e -> handleOpenRegister());
     }
 
     @FXML
@@ -49,9 +50,8 @@ public class LoginController {
             } else {
                 openStudentDashboard(user);
             }
-            // close login window
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.close();
+            // keep the same stage (dashboard replaces login scene)
+            // (handled in openTeacherDashboard/openStudentDashboard)
         } catch (InvalidLoginException ex) {
             showAlert(Alert.AlertType.ERROR, "Login Failed", ex.getMessage());
         } catch (Exception ex) {
@@ -65,11 +65,21 @@ public class LoginController {
         Parent root = loader.load();
         TeacherDashboardController ctrl = loader.getController();
         ctrl.setTeacher(teacher);
-
-        Stage stage = new Stage();
-        stage.setTitle("Teacher Dashboard - " + teacher.getFullName());
-        stage.setScene(new Scene(root));
-        stage.show();
+        Scene scene = new Scene(root);
+        File css = new File("resources/catppuccin-mocha.css");
+        if (css.exists()) scene.getStylesheets().add(css.toURI().toURL().toExternalForm());
+        // reuse the same stage (replace login scene) if possible
+        Stage stage = UIUtils.getStage(loginButton);
+        if (stage != null) {
+            stage.setTitle("Teacher Dashboard - " + teacher.getFullName());
+            stage.setScene(scene);
+        } else {
+            // fallback to opening a new window
+            stage = new Stage();
+            stage.setTitle("Teacher Dashboard - " + teacher.getFullName());
+            stage.setScene(scene);
+            stage.show();
+        }
     }
 
     private void openStudentDashboard(User student) throws Exception {
@@ -78,11 +88,20 @@ public class LoginController {
         Parent root = loader.load();
         StudentDashboardController ctrl = loader.getController();
         ctrl.setStudent(student);
-
-        Stage stage = new Stage();
-        stage.setTitle("Student Dashboard - " + student.getFullName());
-        stage.setScene(new Scene(root));
-        stage.show();
+        Scene scene = new Scene(root);
+        File css = new File("resources/catppuccin-mocha.css");
+        if (css.exists()) scene.getStylesheets().add(css.toURI().toURL().toExternalForm());
+        // reuse the same stage (replace login scene) if possible
+        Stage stage = UIUtils.getStage(loginButton);
+        if (stage != null) {
+            stage.setTitle("Student Dashboard - " + student.getFullName());
+            stage.setScene(scene);
+        } else {
+            stage = new Stage();
+            stage.setTitle("Student Dashboard - " + student.getFullName());
+            stage.setScene(scene);
+            stage.show();
+        }
     }
 
     private void showAlert(Alert.AlertType t, String title, String msg) {
@@ -91,5 +110,26 @@ public class LoginController {
         a.setHeaderText(null);
         a.setContentText(msg);
         a.showAndWait();
+    }
+
+    @FXML
+    private Button registerButton;
+
+    @FXML
+    private void handleOpenRegister() {
+        try {
+            File fxml = new File("resources/Register.fxml");
+            FXMLLoader loader = new FXMLLoader(fxml.toURI().toURL());
+            Parent root = loader.load();
+            // apply stylesheet
+            File css = new File("resources/catppuccin-mocha.css");
+            if (css.exists()) root.getStylesheets().add(css.toURI().toURL().toExternalForm());
+            Stage stage = new Stage();
+            stage.setTitle("Register");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (Exception ex) {
+            showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+        }
     }
 }

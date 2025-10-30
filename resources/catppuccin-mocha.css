@@ -1,0 +1,236 @@
+/* Minimal Catppuccin Mocha inspired stylesheet for JavaFX */
+root {
+    -fx-base: #232634;
+    -fx-background: #1f1d2e;
+}
+
+.root {
+    -fx-background-color: #1f1d2e;
+    -fx-font-family: "Segoe UI", "Roboto", "Noto Sans", sans-serif;
+    -fx-text-fill: #c6c7d0;
+}
+
+Label {
+    -fx-text-fill: #d9e0ee;
+}
+
+Button {
+    -fx-background-color: linear-gradient(#45475a, #313244);
+    -fx-text-fill: #c6c7d0;
+    -fx-background-radius: 6;
+    -fx-padding: 6 12 6 12;
+}
+
+Button:hover {
+    -fx-background-color: linear-gradient(#6e6a86, #4b4a67);
+}
+
+TextField, PasswordField, TextArea, ChoiceBox, ComboBox, TextArea {
+    /* use a slightly lighter surface for inputs to contrast with background */
+    -fx-background-color: #11111b; /* deep mocha */
+    -fx-control-inner-background: #11111b;
+    -fx-text-fill: #c6c7d0;
+    -fx-prompt-text-fill: #9aa0b4;
+    -fx-background-radius: 6;
+    -fx-padding: 6 8 6 8;
+    -fx-border-color: rgba(255,255,255,0.03);
+}
+
+TextArea {
+    -fx-background-color: #0f0e16;
+    -fx-control-inner-background: #0f0e16;
+}
+
+TableView {
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-selection-bar: #494354;
+    -fx-selection-bar-text: #f5eefd;
+}
+
+/* --- Catppuccin Mocha: Table header + table cells --- */
+
+/* Header background (the top bar that contains column headers) */
+.table-view .column-header-background {
+  -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #1e1b2b 0%, #16131b 100%);
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+}
+
+/* Additional selectors for JavaFX skin variations */
+.table-view .table-column-header, .table-view .table-column-header-background, .table-view .column-header-background, .table-view .column-header {
+  -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #1e1b2b 0%, #16131b 100%);
+}
+
+/* catch-all for header internals (sort arrow, stack panes, arrow-button, corner) */
+.table-view .column-header .stack-pane,
+.table-view .column-header .arrow-button,
+.table-view .column-header .arrow,
+.table-view .column-header .sort-arrow,
+.table-view .column-header .graphic,
+.table-view .table-header-row .column-header,
+.table-view .corner {
+  -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #1e1b2b 0%, #16131b 100%) !important;
+  -fx-background-image: none !important;
+}
+
+.table-view .column-header .label, .table-view .table-header-row .label {
+  -fx-background-color: transparent !important;
+  -fx-text-fill: #c6c7d0 !important;
+}
+
+/* remove any default white focus/hover backgrounds on header cells */
+.table-view .column-header:hover, .table-view .column-header:focused, .table-view .column-header:armed {
+  -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #24202e, #1b1824) !important;
+}
+
+/* corner area (top-right where scrollbar sits) */
+.table-view .corner {
+  -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #1e1b2b 0%, #16131b 100%);
+}
+
+/* header row container */
+.table-view .table-header-row, .table-view .table-header-row * {
+  -fx-background-color: transparent;
+}
+
+/* stronger selector for text fields to override platform defaults */
+.root .text-field, .root TextField, .text-field {
+  -fx-background-color: #11111b;
+  -fx-control-inner-background: #11111b;
+  -fx-text-fill: #c6c7d0;
+  -fx-prompt-text-fill: #9aa0b4;
+  -fx-background-radius: 6;
+  -fx-padding: 6 8 6 8;
+  -fx-border-color: rgba(255,255,255,0.03);
+}
+
+/* Each column header cell */
+.table-view .column-header {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+  -fx-padding: 0;
+}
+
+/* The text inside column headers */
+.table-view .column-header .label {
+  -fx-text-fill: #c6c7d0;      /* header text */
+  -fx-font-weight: 600;
+  -fx-alignment: CENTER_LEFT;
+  -fx-padding: 8 10 8 10;
+  -fx-font-size: 12px;
+}
+
+/* Small tweak for sort arrow region so it doesn't show white artifacts */
+.table-view .column-header .arrow {
+  -fx-background-color: transparent;
+}
+
+/* Table cells and rows */
+.table-view .table-row-cell {
+  -fx-background-color: #0f0e16; /* row background */
+  -fx-border-color: transparent;
+}
+.table-view .table-row-cell:odd {
+  -fx-background-color: #0f0e16;
+}
+.table-view .table-row-cell:even {
+  -fx-background-color: #14131a;
+}
+.table-view .table-cell {
+  -fx-text-fill: #c6c7d0;
+  -fx-padding: 8 10;
+  -fx-border-color: transparent;
+}
+
+/* Selected row color */
+.table-view .table-row-cell:selected {
+  -fx-background-color: linear-gradient(#6b5fd0, #5a4fc0);
+}
+
+/* Table header separators (thin line under header) */
+.table-view .column-header-background .separator {
+  -fx-background-color: transparent;
+}
+
+/* If you used styleClass=\"results-table\" give it a little polish */
+.results-table {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+}
+
+/* --- Form controls used in quiz window --- */
+.text-field, .password-field, .text-area, .choice-box, .combo-box {
+  -fx-background-color: #0f0e16;
+  -fx-text-fill: #c6c7d0;
+  -fx-prompt-text-fill: #7f7d86;
+  -fx-border-color: transparent;
+  -fx-background-radius: 6;
+}
+
+/* Buttons */
+.button {
+  -fx-background-color: linear-gradient(#6E6BEF, #5A57D8);
+  -fx-text-fill: white;
+  -fx-background-radius: 6;
+  -fx-padding: 6 14;
+}
+.button:hover {
+  -fx-background-color: linear-gradient(#7F7CF0, #6B67DF);
+}
+
+/* Radio/Toggle */
+.radio-button, .check-box {
+  -fx-text-fill: #c6c7d0;
+}
+.radio-button .radio, .check-box .box {
+  -fx-background-color: #1b1923;
+  -fx-mark-color: #c6c7d0;
+}
+.card {
+    -fx-background-color: #191624;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 2);
+}
+
+/* ensure question cards and panels in quiz attempt inherit dark bg and subtle border */
+.card .label, .card Label {
+  -fx-text-fill: #c6c7d0;
+}
+
+/* if nodes are given .card directly (VBox.getStyleClass().add("card")) this will apply */
+.card {
+  -fx-background-color: #0f0e16;
+  -fx-border-color: rgba(255,255,255,0.03);
+}
+
+/* search field near top-right on Teacher dashboard */
+.search-field, .search-field TextField {
+  -fx-background-color: #11111b;
+  -fx-control-inner-background: #11111b;
+  -fx-text-fill: #c6c7d0;
+  -fx-prompt-text-fill: #9aa0b4;
+  -fx-background-radius: 6;
+  -fx-padding: 6 8 6 8;
+  -fx-border-color: rgba(255,255,255,0.03);
+}
+
+/* color labels/radios inside card boxes */
+.card .label, .card Label {
+  -fx-text-fill: #c6c7d0;
+}
+.card .radio-button, .card .check-box, .card RadioButton {
+  -fx-text-fill: #c6c7d0;
+}
+
+ListView {
+    -fx-control-inner-background: transparent;
+}
+
+/* subtle border for panels */
+VBox, HBox, BorderPane, AnchorPane {
+    -fx-border-color: rgba(255,255,255,0.03);
+    -fx-border-radius: 6;
+}

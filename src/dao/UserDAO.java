@@ -11,6 +11,44 @@ import java.util.List;
 public class UserDAO {
 
     public User login(String username, String password) throws InvalidLoginException {
+        // attempt to query including student_class; if the DB doesn't have that column yet,
+        // fallback to a simpler select (for backward compatibility)
+        try {
+            return loginWithStudentClass(username, password);
+        } catch (SQLException ex) {
+            // if the error indicates unknown column, try fallback
+            try {
+                return loginWithoutStudentClass(username, password);
+            } catch (SQLException ex2) {
+                throw new InvalidLoginException("Database error during login: " + ex2.getMessage());
+            }
+        }
+    }
+
+    private User loginWithStudentClass(String username, String password) throws SQLException {
+        String sql = "SELECT id, username, password, full_name, role, student_class FROM users WHERE username = ? AND password = ?";
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, password);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    User u = new User();
+                    u.setId(rs.getInt("id"));
+                    u.setUsername(rs.getString("username"));
+                    u.setPassword(rs.getString("password"));
+                    u.setFullName(rs.getString("full_name"));
+                    u.setRole(rs.getString("role"));
+                    u.setStudentClass(rs.getString("student_class"));
+                    return u;
+                } else {
+                    throw new SQLException("Invalid username or password.");
+                }
+            }
+        }
+    }
+
+    private User loginWithoutStudentClass(String username, String password) throws SQLException {
         String sql = "SELECT id, username, password, full_name, role FROM users WHERE username = ? AND password = ?";
         try (Connection c = DatabaseConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -26,27 +64,45 @@ public class UserDAO {
                     u.setRole(rs.getString("role"));
                     return u;
                 } else {
-                    throw new InvalidLoginException("Invalid username or password.");
+                    throw new SQLException("Invalid username or password.");
                 }
             }
-        } catch (SQLException ex) {
-            throw new InvalidLoginException("Database error during login: " + ex.getMessage());
         }
     }
 
     // CRUD: Add user (teacher or student)
     public int addUser(User user) throws SQLException {
-        String sql = "INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, user.getUsername());
-            ps.setString(2, user.getPassword());
-            ps.setString(3, user.getFullName());
-            ps.setString(4, user.getRole());
-            ps.executeUpdate();
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    return keys.getInt(1);
+        // try extended insert with student_class; fall back if the column doesn't exist
+        try {
+            String sql = "INSERT INTO users (username, password, full_name, role, student_class) VALUES (?, ?, ?, ?, ?)";
+            try (Connection c = DatabaseConnection.getConnection();
+                 PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getPassword());
+                ps.setString(3, user.getFullName());
+                ps.setString(4, user.getRole());
+                ps.setString(5, user.getStudentClass());
+                ps.executeUpdate();
+                try (ResultSet keys = ps.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        return keys.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            // fallback: try insert without student_class
+            String sql = "INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)";
+            try (Connection c = DatabaseConnection.getConnection();
+                 PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getPassword());
+                ps.setString(3, user.getFullName());
+                ps.setString(4, user.getRole());
+                ps.executeUpdate();
+                try (ResultSet keys = ps.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        return keys.getInt(1);
+                    }
                 }
             }
         }
@@ -55,35 +111,74 @@ public class UserDAO {
 
     public List<User> listUsers() throws SQLException {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT id, username, full_name, role FROM users";
-        try (Connection c = DatabaseConnection.getConnection();
-             Statement s = c.createStatement();
-             ResultSet rs = s.executeQuery(sql)) {
-            while (rs.next()) {
-                User u = new User();
-                u.setId(rs.getInt("id"));
-                u.setUsername(rs.getString("username"));
-                u.setFullName(rs.getString("full_name"));
-                u.setRole(rs.getString("role"));
-                list.add(u);
+        // try extended select
+        try {
+            String sql = "SELECT id, username, full_name, role, student_class FROM users";
+            try (Connection c = DatabaseConnection.getConnection();
+                 Statement s = c.createStatement();
+                 ResultSet rs = s.executeQuery(sql)) {
+                while (rs.next()) {
+                    User u = new User();
+                    u.setId(rs.getInt("id"));
+                    u.setUsername(rs.getString("username"));
+                    u.setFullName(rs.getString("full_name"));
+                    u.setRole(rs.getString("role"));
+                    u.setStudentClass(rs.getString("student_class"));
+                    list.add(u);
+                }
+            }
+        } catch (SQLException ex) {
+            // fallback
+            String sql = "SELECT id, username, full_name, role FROM users";
+            try (Connection c = DatabaseConnection.getConnection();
+                 Statement s = c.createStatement();
+                 ResultSet rs = s.executeQuery(sql)) {
+                while (rs.next()) {
+                    User u = new User();
+                    u.setId(rs.getInt("id"));
+                    u.setUsername(rs.getString("username"));
+                    u.setFullName(rs.getString("full_name"));
+                    u.setRole(rs.getString("role"));
+                    list.add(u);
+                }
             }
         }
         return list;
     }
 
     public User getById(int id) throws SQLException {
-        String sql = "SELECT id, username, full_name, role FROM users WHERE id = ?";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    User u = new User();
-                    u.setId(rs.getInt("id"));
-                    u.setUsername(rs.getString("username"));
-                    u.setFullName(rs.getString("full_name"));
-                    u.setRole(rs.getString("role"));
-                    return u;
+        // try extended
+        try {
+            String sql = "SELECT id, username, full_name, role, student_class FROM users WHERE id = ?";
+            try (Connection c = DatabaseConnection.getConnection();
+                 PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        User u = new User();
+                        u.setId(rs.getInt("id"));
+                        u.setUsername(rs.getString("username"));
+                        u.setFullName(rs.getString("full_name"));
+                        u.setRole(rs.getString("role"));
+                        u.setStudentClass(rs.getString("student_class"));
+                        return u;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            String sql = "SELECT id, username, full_name, role FROM users WHERE id = ?";
+            try (Connection c = DatabaseConnection.getConnection();
+                 PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        User u = new User();
+                        u.setId(rs.getInt("id"));
+                        u.setUsername(rs.getString("username"));
+                        u.setFullName(rs.getString("full_name"));
+                        u.setRole(rs.getString("role"));
+                        return u;
+                    }
                 }
             }
         }
@@ -91,14 +186,29 @@ public class UserDAO {
     }
 
     public boolean updateUser(User user) throws SQLException {
-        String sql = "UPDATE users SET password = ?, full_name = ?, role = ? WHERE id = ?";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, user.getPassword());
-            ps.setString(2, user.getFullName());
-            ps.setString(3, user.getRole());
-            ps.setInt(4, user.getId());
-            return ps.executeUpdate() > 0;
+        // try extended update
+        try {
+            String sql = "UPDATE users SET password = ?, full_name = ?, role = ?, student_class = ? WHERE id = ?";
+            try (Connection c = DatabaseConnection.getConnection();
+                 PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setString(1, user.getPassword());
+                ps.setString(2, user.getFullName());
+                ps.setString(3, user.getRole());
+                ps.setString(4, user.getStudentClass());
+                ps.setInt(5, user.getId());
+                return ps.executeUpdate() > 0;
+            }
+        } catch (SQLException ex) {
+            // fallback without student_class
+            String sql = "UPDATE users SET password = ?, full_name = ?, role = ? WHERE id = ?";
+            try (Connection c = DatabaseConnection.getConnection();
+                 PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setString(1, user.getPassword());
+                ps.setString(2, user.getFullName());
+                ps.setString(3, user.getRole());
+                ps.setInt(4, user.getId());
+                return ps.executeUpdate() > 0;
+            }
         }
     }
 
