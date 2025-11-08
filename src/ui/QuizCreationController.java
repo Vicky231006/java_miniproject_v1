@@ -18,6 +18,11 @@ public class QuizCreationController {
 
     @FXML private TextField titleField;
     @FXML private TextArea descriptionArea;
+    @FXML private TextField courseField;
+    @FXML private TextField deadlineField; // ISO-like input
+    @FXML private TextField timeLimitField;
+    @FXML private ChoiceBox<String> targetStreamChoice;
+    @FXML private TextField targetDivisionsField;
     @FXML private TextField qText;
     @FXML private TextField optA, optB, optC, optD;
     @FXML private ChoiceBox<String> correctChoice;
@@ -49,6 +54,11 @@ public class QuizCreationController {
             }
         });
         questionsListView.setItems(questions);
+        // populate target stream choices
+        if (targetStreamChoice != null) {
+            targetStreamChoice.getItems().addAll("ALL", "Computer Engg", "Mech Engg", "Comp Sci Engg", "ECS");
+            targetStreamChoice.setValue("ALL");
+        }
         // allow deleting selected question via context menu or DEL key
         ContextMenu cm = new ContextMenu();
         MenuItem delete = new MenuItem("Delete");
@@ -58,6 +68,24 @@ public class QuizCreationController {
                 // if it already exists in DB (has id > 0) delete it there too
                 if (sel.getId() > 0) {
                     try {
+        // Initialize target stream choices if not already done
+        if (targetStreamChoice != null && targetStreamChoice.getItems().isEmpty()) {
+            targetStreamChoice.setItems(FXCollections.observableArrayList("ALL", "CSE", "IT", "MECH", "CIVIL", "ELEC"));
+        }
+        
+        // Add validation for time limit field
+        if (timeLimitField != null) {
+            timeLimitField.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (!newVal.matches("\\d*")) {
+                    timeLimitField.setText(newVal.replaceAll("[^\\d]", ""));
+                }
+            });
+            timeLimitField.setPromptText("Enter time limit in minutes");
+        }
+        
+        if (deadlineField != null) {
+            deadlineField.setPromptText("YYYY-MM-DDTHH:MM (e.g. 2025-12-31T23:59)");
+        }
                         questionDAO.deleteQuestion(sel.getId());
                     } catch (Exception ex) {
                         showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
@@ -139,10 +167,50 @@ public class QuizCreationController {
                 q.setTitle(title);
                 q.setDescription(descriptionArea.getText());
                 q.setTeacherId(teacher.getId());
+                // optional metadata
+                q.setCourseName(courseField != null ? courseField.getText().trim() : null);
+                if (deadlineField != null && !deadlineField.getText().trim().isEmpty()) {
+                    try {
+                        q.setDeadline(java.time.LocalDateTime.parse(deadlineField.getText().trim()));
+                    } catch (Exception pe) {
+                        showAlert(Alert.AlertType.ERROR, "Validation", "Invalid deadline format. Use YYYY-MM-DDTHH:MM");
+                        return;
+                    }
+                }
+                if (timeLimitField != null && !timeLimitField.getText().trim().isEmpty()) {
+                    try {
+                        q.setTimeLimit(Integer.parseInt(timeLimitField.getText().trim()));
+                    } catch (NumberFormatException nfe) {
+                        showAlert(Alert.AlertType.ERROR, "Validation", "Time limit must be an integer (minutes).");
+                        return;
+                    }
+                }
+                if (targetStreamChoice != null) q.setTargetStream(targetStreamChoice.getValue());
+                if (targetDivisionsField != null) q.setTargetDivisions(targetDivisionsField.getText().trim());
                 quizId = quizDAO.addQuiz(q);
             } else {
                 editingQuiz.setTitle(title);
                 editingQuiz.setDescription(descriptionArea.getText());
+                // update optional fields on edit as well
+                editingQuiz.setCourseName(courseField != null ? courseField.getText().trim() : editingQuiz.getCourseName());
+                if (deadlineField != null && !deadlineField.getText().trim().isEmpty()) {
+                    try {
+                        editingQuiz.setDeadline(java.time.LocalDateTime.parse(deadlineField.getText().trim()));
+                    } catch (Exception pe) {
+                        showAlert(Alert.AlertType.ERROR, "Validation", "Invalid deadline format. Use YYYY-MM-DDTHH:MM");
+                        return;
+                    }
+                }
+                if (timeLimitField != null && !timeLimitField.getText().trim().isEmpty()) {
+                    try {
+                        editingQuiz.setTimeLimit(Integer.parseInt(timeLimitField.getText().trim()));
+                    } catch (NumberFormatException nfe) {
+                        showAlert(Alert.AlertType.ERROR, "Validation", "Time limit must be an integer (minutes).");
+                        return;
+                    }
+                }
+                if (targetStreamChoice != null) editingQuiz.setTargetStream(targetStreamChoice.getValue());
+                if (targetDivisionsField != null) editingQuiz.setTargetDivisions(targetDivisionsField.getText().trim());
                 quizDAO.updateQuiz(editingQuiz);
                 quizId = editingQuiz.getId();
             }

@@ -18,7 +18,9 @@ public class RegisterController {
     @FXML private PasswordField password;
     @FXML private TextField fullName;
     @FXML private ChoiceBox<String> roleChoice;
-    @FXML private ChoiceBox<String> classChoice;
+    @FXML private TextField rollNumberField;
+    @FXML private ChoiceBox<String> streamChoice;
+    @FXML private ChoiceBox<String> divisionChoice;
 
     private UserDAO userDAO = new UserDAO();
 
@@ -26,8 +28,11 @@ public class RegisterController {
     public void initialize() {
         roleChoice.getItems().addAll("STUDENT","TEACHER");
         roleChoice.setValue("STUDENT");
-        classChoice.getItems().addAll("A","B","C","D");
-        classChoice.setValue("A");
+        // populate new student-related fields
+        streamChoice.getItems().addAll("Computer Engg", "Mech Engg", "Comp Sci Engg", "ECS");
+        streamChoice.setValue("Computer Engg");
+        divisionChoice.getItems().addAll("A","B","C","D");
+        divisionChoice.setValue("A");
     }
 
     @FXML
@@ -59,7 +64,11 @@ public class RegisterController {
             user.setFullName(fn);
             user.setRole(role);
             if ("STUDENT".equals(role)) {
-                user.setStudentClass(classChoice.getValue());
+                user.setRollNumber(rollNumberField.getText().trim());
+                user.setStream(streamChoice.getValue());
+                user.setDivision(divisionChoice.getValue());
+                // keep legacy field in sync
+                user.setStudentClass(divisionChoice.getValue());
             }
             int newId = userDAO.addUser(user);
             user.setId(newId);

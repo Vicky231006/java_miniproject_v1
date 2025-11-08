@@ -22,6 +22,8 @@ public class StudentDashboardController {
     @FXML private TableColumn<Quiz, Integer> colId;
     @FXML private TableColumn<Quiz, String> colTitle;
     @FXML private TableColumn<Quiz, String> colDesc;
+    @FXML private TableColumn<Quiz, String> colCourse;
+    @FXML private TableColumn<Quiz, String> colDeadline;
     @FXML private TextField searchField;
     @FXML private Button takeQuizButton;
     @FXML private Button viewResultsButton;
@@ -43,6 +45,23 @@ public class StudentDashboardController {
         colId.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getId()));
         colTitle.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getTitle()));
         colDesc.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDescription()));
+    // Show only quiz course name (student dashboard requirement)
+    colCourse.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        data.getValue().getCourseName() != null && !data.getValue().getCourseName().isEmpty() ? data.getValue().getCourseName() : data.getValue().getTitle()
+    ));
+        colDeadline.setCellValueFactory(data -> {
+            try {
+                if (data.getValue().getDeadline() == null) return new javafx.beans.property.SimpleStringProperty("");
+                java.time.LocalDateTime dl = data.getValue().getDeadline();
+                if (java.time.LocalDateTime.now().isAfter(dl)) {
+                    return new javafx.beans.property.SimpleStringProperty("Deadline is done");
+                } else {
+                    return new javafx.beans.property.SimpleStringProperty(dl.toString());
+                }
+            } catch (Exception ex) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+        });
         // wire sign out button programmatically (FXML no longer references onAction)
         if (signOutButton != null) {
             signOutButton.setOnAction(e -> handleSignOut());
@@ -52,11 +71,42 @@ public class StudentDashboardController {
     private void loadQuizzes() {
         try {
             List<Quiz> list = quizDAO.listQuizzes();
-            quizList.setAll(list);
+            // filter quizzes: only those targeted to this student's stream/division or ALL
+            java.util.List<Quiz> filtered = new java.util.ArrayList<>();
+            for (Quiz q : list) {
+                if (isAssignedToStudent(q)) filtered.add(q);
+            }
+            quizList.setAll(filtered);
             quizzesTable.setItems(quizList);
         } catch (Exception ex) {
             showAlert(Alert.AlertType.ERROR, "Error loading", ex.getMessage());
         }
+    }
+
+    private boolean isAssignedToStudent(Quiz q) {
+        if (student == null) return false;
+        // target_stream: comma-separated or 'ALL'
+        String ts = q.getTargetStream();
+        String td = q.getTargetDivisions();
+        if (ts == null || ts.trim().isEmpty()) ts = "ALL";
+        if (td == null || td.trim().isEmpty()) td = "ALL";
+        String studentStream = student.getStream();
+        String studentDivision = student.getDivision();
+    if (studentStream == null) studentStream = "";
+    if (studentDivision == null) studentDivision = "";
+    studentStream = studentStream.trim();
+    studentDivision = studentDivision.trim();
+        boolean streamAllowed = false;
+        for (String part : ts.split(",")) {
+            String p = part.trim();
+            if (p.equalsIgnoreCase("ALL") || p.equalsIgnoreCase(studentStream)) { streamAllowed = true; break; }
+        }
+        boolean divisionAllowed = false;
+        for (String part : td.split(",")) {
+            String p = part.trim();
+            if (p.equalsIgnoreCase("ALL") || p.equalsIgnoreCase(studentDivision)) { divisionAllowed = true; break; }
+        }
+        return streamAllowed && divisionAllowed;
     }
 
     @FXML
@@ -64,6 +114,15 @@ public class StudentDashboardController {
         Quiz sel = quizzesTable.getSelectionModel().getSelectedItem();
         if (sel == null) {
             showAlert(Alert.AlertType.WARNING, "Select Quiz", "Please select a quiz to take.");
+            return;
+        }
+        // ensure student is allowed and deadline not passed
+        if (!isAssignedToStudent(sel)) {
+            showAlert(Alert.AlertType.ERROR, "Not Allowed", "You are not eligible to take this quiz.");
+            return;
+        }
+        if (sel.getDeadline() != null && java.time.LocalDateTime.now().isAfter(sel.getDeadline())) {
+            showAlert(Alert.AlertType.ERROR, "Deadline Passed", "This quiz's deadline has passed and it cannot be attempted.");
             return;
         }
         try {

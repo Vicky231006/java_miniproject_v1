@@ -3,7 +3,7 @@ REM build_and_run.bat - compiles the project and runs the JavaFX application
 REM Edit the paths below if your installations are in different locations
 
 set "JAVAFX_LIB=C:\Program Files\javafx-sdk-25\lib"
-set "MYSQL_JAR=C:\Users\Vicky\Desktop\QuizManagementSystem\lib\mysql-connector-j-8.0.33.jar"
+set "MYSQL_JAR=C:/Users/Vicky/Desktop/new_quiz_system/mysql-connector-j-8.0.33/mysql-connector-j-8.0.33.jar"
 set "JDK_BIN=C:\Program Files\Java\jdk-25\bin"
 set "JAVAC=%JDK_BIN%\javac.exe"
 set "JAVA=%JDK_BIN%\java.exe"

@@ -1,0 +1,47 @@
+%%{init: {'theme':'dark', 'themeVariables': { 'primaryColor': '#1f1f1f', 'edgeLabelBackground':'#333', 'tertiaryColor': '#282828', 'primaryTextColor': '#e0e0e0', 'lineColor': '#00aaff', 'nodeBorder': '#00aaff' }}}%%
+erDiagram
+    USERS {
+        INT id PK
+        VARCHAR username UNIQUE
+        VARCHAR password
+        VARCHAR full_name
+        ENUM word "TEACHER | STUDENT"
+        VARCHAR student_class
+        VARCHAR year
+        VARCHAR branch
+        TIMESTAMP created_at
+    }
+
+    QUIZZES {
+        INT id PK
+        VARCHAR title
+        TEXT description
+        INT teacher_id FK
+        TIMESTAMP created_at
+    }
+
+    QUESTIONS {
+        INT id PK
+        INT quiz_id FK
+        TEXT question_text
+        VARCHAR option_a
+        VARCHAR option_b
+        VARCHAR option_c
+        VARCHAR option_d
+        CHAR correct_option
+    }
+
+    RESULTS {
+        INT id PK
+        INT student_id FK
+        INT quiz_id FK
+        DOUBLE score
+        INT total_questions
+        TIMESTAMP taken_at
+        TEXT answers
+    }
+
+    USERS ||--o{ QUIZZES : "creates >"
+    QUIZZES ||--o{ QUESTIONS : "contains >"
+    USERS ||--o{ RESULTS : "takes >"
+    QUIZZES ||--o{ RESULTS : "evaluated_in >"

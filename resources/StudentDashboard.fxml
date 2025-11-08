@@ -22,7 +22,9 @@
       <columns>
         <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
         <TableColumn fx:id="colTitle" text="Title" prefWidth="250"/>
-        <TableColumn fx:id="colDesc" text="Description" prefWidth="350"/>
+        <TableColumn fx:id="colDesc" text="Description" prefWidth="250"/>
+        <TableColumn fx:id="colCourse" text="Course" prefWidth="150"/>
+        <TableColumn fx:id="colDeadline" text="Deadline" prefWidth="150"/>
       </columns>
     </TableView>
   </center>

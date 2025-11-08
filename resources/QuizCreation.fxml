@@ -15,6 +15,24 @@
         <TextArea fx:id="descriptionArea" prefRowCount="2" HBox.hgrow="ALWAYS"/>
       </children>
     </HBox>
+    <HBox spacing="8">
+      <children>
+        <Label text="Course:" />
+        <TextField fx:id="courseField" HBox.hgrow="ALWAYS" />
+        <Label text="Deadline (YYYY-MM-DDTHH:MM):" />
+        <TextField fx:id="deadlineField" promptText="2025-11-07T15:30" />
+        <Label text="Time Limit (mins):" />
+        <TextField fx:id="timeLimitField" prefWidth="80" />
+      </children>
+    </HBox>
+    <HBox spacing="8">
+      <children>
+        <Label text="Target Stream:" />
+        <ChoiceBox fx:id="targetStreamChoice" />
+        <Label text="Target Divisions (comma sep or ALL):" />
+        <TextField fx:id="targetDivisionsField" promptText="A,B or ALL" />
+      </children>
+    </HBox>
     <Separator />
     <Label text="Add Question" style="-fx-font-weight: bold;"/>
     <TextField fx:id="qText" promptText="Question text"/>

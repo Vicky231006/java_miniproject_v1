@@ -3,13 +3,16 @@
 <?import javafx.scene.layout.*?>
 <VBox spacing="10" xmlns:fx="http://javafx.com/fxml" fx:controller="ui.QuizAttemptController" style="-fx-padding:10;">
   <children>
-    <Label fx:id="quizTitleLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+    <HBox alignment="CENTER_LEFT" spacing="10">
+      <Label fx:id="quizTitleLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
+      <Label fx:id="timerLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+    </HBox>
     <ScrollPane fitToWidth="true">
       <content>
         <VBox spacing="8" fx:id="questionsContainer" />
       </content>
     </ScrollPane>
-    <HBox alignment="CENTER_RIGHT">
+    <HBox alignment="CENTER_RIGHT" spacing="8">
       <children>
         <Button fx:id="submitBtn" text="Submit" onAction="#handleSubmit"/>
       </children>

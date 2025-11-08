@@ -9,8 +9,13 @@
     <TextField fx:id="fullName" promptText="Full name" />
       <Label text="Role:" />
       <ChoiceBox fx:id="roleChoice" />
-      <Label text="Class (A/B/C/D):" />
-      <ChoiceBox fx:id="classChoice" />
+      <!-- New student fields: roll number, stream and division -->
+      <Label text="Roll Number:" />
+      <TextField fx:id="rollNumberField" promptText="Roll number (students)" />
+      <Label text="Stream:" />
+      <ChoiceBox fx:id="streamChoice" />
+      <Label text="Division:" />
+      <ChoiceBox fx:id="divisionChoice" />
     <HBox spacing="8">
       <children>
         <Button text="Register" onAction="#handleRegister" />

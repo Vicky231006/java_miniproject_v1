@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="quiz_system" default="compile" basedir=".">
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="resources.dir" value="resources"/>
+    
+    <!-- Change this to point to your JavaFX SDK location -->
+    <property name="javafx.sdk.dir" value="${lib.dir}/javafx-sdk-17"/>
+    
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${javafx.sdk.dir}/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement location="${classes.dir}"/>
+    </path>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false" debug="true">
+            <classpath refid="classpath"/>
+            <compilerarg line="--module-path ${javafx.sdk.dir}/lib --add-modules javafx.controls,javafx.fxml"/>
+        </javac>
+        <copy todir="${classes.dir}">
+            <fileset dir="${resources.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="run" depends="compile">
+        <java classname="ui.Main" fork="true">
+            <classpath refid="classpath"/>
+            <jvmarg value="--module-path"/>
+            <jvmarg value="${javafx.sdk.dir}/lib"/>
+            <jvmarg value="--add-modules"/>
+            <jvmarg value="javafx.controls,javafx.fxml"/>
+        </java>
+    </target>
+</project>

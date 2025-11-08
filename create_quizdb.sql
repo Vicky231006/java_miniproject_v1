@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   full_name VARCHAR(200) NOT NULL,
   role ENUM('TEACHER','STUDENT') NOT NULL,
+  roll_number VARCHAR(20),
+  stream ENUM('Computer Engg', 'Mech Engg', 'Comp Sci Engg', 'ECS'),
+  division CHAR(1),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -19,6 +22,11 @@ CREATE TABLE IF NOT EXISTS quizzes (
   title VARCHAR(255) NOT NULL,
   description TEXT,
   teacher_id INT NOT NULL,
+  course_name VARCHAR(100),
+  deadline TIMESTAMP,
+  time_limit INT, -- in minutes
+  target_stream VARCHAR(100), -- comma-separated streams or 'ALL'
+  target_divisions VARCHAR(20), -- comma-separated divisions or 'ALL'
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE
 );

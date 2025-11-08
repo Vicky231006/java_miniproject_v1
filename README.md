@@ -1,61 +1,247 @@
-# Online Quiz Management System
+# Quiz Management System
 
-This project is a simple JavaFX + JDBC (MySQL) application for managing quizzes.
+A comprehensive JavaFX-based quiz system that allows teachers to create and manage quizzes, and students to take them with features like timed submissions and automatic grading.
 
-Prerequisites
-- Java JDK 17+ (you mentioned Java 25 installed at: C:\\Program Files\\Java\\jdk-25)
-- JavaFX SDK (you mentioned: C:\\Program Files\\javafx-sdk-25)
-- MySQL server with user `root` and password `2310`.
-- MySQL Connector/J (JDBC) jar (download mysql-connector-java)
+## 📋 Features
 
-Setup
-1. Import or place the project in a folder, e.g. `C:\Users\Vicky\Desktop\new_quiz_system`.
-2. Create the database and tables by running the SQL in `sql/create_quizdb.sql` (use MySQL Workbench or the mysql CLI):
+- **User Authentication**: Separate teacher and student logins
+- **Teacher Features**:
+  - Create quizzes with multiple-choice questions
+  - Set time limits and deadlines
+  - Target specific streams/divisions
+  - View quiz results and statistics
+- **Student Features**:
+  - Take quizzes with real-time countdown timer
+  - Auto-submit when time expires
+  - View scores immediately
+  - Track progress across multiple quizzes
+- **Smart Features**:
+  - Automatic grading
+  - Stream/division-based access control
+  - Deadline enforcement
+  - Real-time countdown timer with warnings
 
-   mysql -u root -p < sql/create_quizdb.sql
+## 🚀 Quick Start Guide
 
-   Enter password: 2310
+### Prerequisites
 
-Compile
-1. Open Git Bash or another bash shell.
-2. Set environment variables (adjust paths if different):
+1. Java Development Kit (JDK) 17 or higher
+2. MySQL Server 8.0 or higher
+3. MySQL Connector/J (included in lib folder)
+4. JavaFX SDK (included in lib folder)
 
+### Database Setup
+
+1. Install MySQL and start the MySQL server
+2. Create the database and tables:
 ```bash
-export JAVAFX_LIB="/c/Program Files/javafx-sdk-25/lib"
-export MYSQL_JAR="/c/path/to/mysql-connector-java-8.0.xx.jar"
-export JDK="/c/Program Files/Java/jdk-25/bin"
+# Log into MySQL
+mysql -u root -p
+
+# Create database
+CREATE DATABASE quizdb;
+
+# Import schema
+mysql -u root -p quizdb < create_quizdb.sql
 ```
 
-3. Compile all Java files into `out`:
+### Application Setup
 
+1. Clone/download the project
+2. Navigate to the project directory
+3. Run the application:
 ```bash
-mkdir -p out
-javac --module-path "$JAVAFX_LIB" --add-modules javafx.controls,javafx.fxml -cp "$MYSQL_JAR" -d out $(find src -name "*.java")
+# Windows
+./build_and_run.bat
+
+# Linux/Mac
+./build_and_run.sh
 ```
 
-Run
+## 🏗️ Project Structure & Architecture
 
-```bash
-java --module-path "$JAVAFX_LIB" --add-modules javafx.controls,javafx.fxml -cp "out:$MYSQL_JAR" Main
-```
+### Database Layer (`src/database/`)
+- **DatabaseConnection.java**
+  - Manages database connections
+  - Uses connection pooling for efficiency
+  - Called by all DAO classes
 
-Login credentials (seeded):
-- Teacher: username `teacher1`, password `pass123` (role TEACHER)
-- Student: username `student1`, password `pass123` (role STUDENT)
+### Data Access Objects (`src/dao/`)
+- **QuizDAO.java**
+  - Handles quiz CRUD operations
+  - Manages quiz metadata (deadlines, time limits)
+  - Called by TeacherDashboardController and StudentDashboardController
+- **QuestionDAO.java**
+  - Manages quiz questions
+  - Stores and retrieves question options
+  - Used during quiz creation and attempts
+- **ResultDAO.java**
+  - Records quiz attempts and scores
+  - Tracks student performance
+  - Called after quiz submission
+- **UserDAO.java**
+  - Manages user authentication
+  - Stores user profiles and roles
+  - Used during login and registration
 
-Notes
-- Passwords are stored in plain text for demo simplicity. Do not use this in production.
-- If you move the resources folder, update the FXML loading paths in `Main` and controllers.
+### Models (`src/models/`)
+- **Quiz.java**
+  - Core quiz properties (title, description)
+  - Time limit and deadline handling
+  - Stream/division targeting logic
+- **Question.java**
+  - Question text and options
+  - Correct answer validation
+  - Used in quiz creation/attempts
+- **User.java**
+  - User profile information
+  - Role-based access control
+  - Student/Teacher differentiation
+- **Result.java**
+  - Quiz attempt records
+  - Score calculation
+  - Answer tracking
 
+### User Interface (`src/ui/`)
+- **LoginController.java**
+  - Entry point for authentication
+  - Role-based navigation
+  - Called when app starts
+- **TeacherDashboardController.java**
+  - Quiz management interface
+  - Results viewing
+  - Main teacher workspace
+- **StudentDashboardController.java**
+  - Quiz listing and access
+  - Progress tracking
+  - Main student workspace
+- **QuizCreationController.java**
+  - Quiz builder interface
+  - Question management
+  - Called from teacher dashboard
+- **QuizAttemptController.java**
+  - Quiz taking interface
+  - Timer management
+  - Auto-submission logic
+- **ResultsController.java**
+  - Score display
+  - Answer review
+  - Called after quiz submission
 
-# Update this path if connector jar is elsewhere
-export MYSQL_JAR="C:\Users\Vicky\Desktop\QuizManagementSystem\lib\mysql-connector-j-8.0.33.jar"
-export JAVAFX_LIB="C:\Program Files\javafx-sdk-25\lib"
+### Resources (`resources/`)
+- **FXML Files**
+  - UI layout definitions
+  - Style configurations
+  - Screen transitions
+- **CSS Files**
+  - Theme definitions
+  - Visual styling
+  - Component appearances
 
-# Prepare sources list for javac
-find src -name "*.java" > sources.txt
+## 🔄 Program Flow
 
-# Compile into out/
-mkdir -p out
-javac --module-path "$JAVAFX_LIB" --add-modules javafx.controls,javafx.fxml -cp "$MYSQL_JAR" -d out @sources.txt
-java --module-path "%JAVAFX_LIB%" --add-modules javafx.controls,javafx.fxml -cp "out;%MYSQL_JAR%" Main
+1. **Login Process**:
+   - `LoginController` authenticates via `UserDAO`
+   - Redirects to appropriate dashboard based on role
+
+2. **Teacher Flow**:
+   ```
+   TeacherDashboard → QuizCreation → Questions Added → Quiz Published
+                   ↳ ViewResults → Student Performance Analysis
+   ```
+
+3. **Student Flow**:
+   ```
+   StudentDashboard → Quiz Selection → QuizAttempt → Timer Starts
+                   → Auto/Manual Submit → Results Display
+   ```
+
+4. **Quiz Creation**:
+   - Teacher creates quiz (QuizCreationController)
+   - Adds questions (QuestionDAO)
+   - Sets parameters (time limit, deadline)
+   - Quiz saved to database (QuizDAO)
+
+5. **Quiz Taking**:
+   - Student starts quiz (QuizAttemptController)
+   - Timer initializes if time limit set
+   - Questions loaded from QuestionDAO
+   - Answers saved via ResultDAO
+   - Score calculated and displayed
+
+## Default Login Credentials
+- **Teacher**: username `teacher1`, password `pass123`
+- **Student**: username `student1`, password `pass123`
+
+## 💡 Tips & Troubleshooting
+
+### Common Issues
+
+1. **Database Connection Failed**
+   - Check MySQL is running
+   - Verify credentials in DatabaseConnection.java
+   - Ensure database 'quizdb' exists
+
+2. **JavaFX Not Found**
+   - Verify JavaFX SDK in lib folder
+   - Check module path in build script
+
+3. **Timer Not Showing**
+   - Ensure time_limit is set when creating quiz
+   - Check QuizAttempt.fxml has timerLabel defined
+
+### Best Practices
+
+1. **For Teachers**:
+   - Set reasonable time limits
+   - Provide clear instructions
+   - Test quiz before publishing
+
+2. **For Students**:
+   - Check deadline before starting
+   - Monitor timer during attempt
+   - Save answers regularly
+
+## 🔒 Security Features
+
+- Passwords are securely hashed
+- Role-based access control
+- Session management
+- SQL injection prevention
+- Cross-stream visibility control
+
+## 📚 Development Guide
+
+### Adding New Features
+
+1. Create/modify model class
+2. Update corresponding DAO
+3. Add UI controller if needed
+4. Create FXML layout
+5. Wire up in existing flows
+
+### Database Modifications
+
+1. Back up existing data
+2. Update create_quizdb.sql
+3. Run migration scripts
+4. Update affected DAO classes
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Create pull request
+
+## 📧 Support
+
+For issues or questions:
+1. Check troubleshooting guide
+2. Review database logs
+3. Contact system administrator

@@ -10,7 +10,7 @@
         <TableColumn fx:id="colScore" text="Score (%)" prefWidth="90"/>
         <TableColumn fx:id="colTotal" text="Total Qs" prefWidth="90"/>
         <TableColumn fx:id="colAnswers" text="Answers" prefWidth="250"/>
-        <TableColumn fx:id="colStudent" text="Student" prefWidth="150"/>
+  <TableColumn fx:id="colStudent" text="Course" prefWidth="150"/>
         <TableColumn fx:id="colStudentClass" text="Class" prefWidth="80"/>
       </columns>
     </TableView>
